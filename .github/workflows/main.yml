@@ -24,11 +24,11 @@ jobs:
               run: |
                   npm run-script build
 
-            - name: Change base-tag in index.html from / to dictionary
-              run: sed -i 's/<base href="\/" \/>/<base href="\/dictionary\/" \/>/g' public/index.html
+            - name: Change base-tag in index.html from / to qr-detector
+              run: sed -i 's/<base href="\/" \/>/<base href="\/qr-detector\/" \/>/g' public/index.html
 
             - name: Deploy 🚀
-              uses: JamesIves/github-pages-deploy-action@4.1.7
+              uses: JamesIves/github-pages-deploy-action@4.5.0
               with:
                   branch: gh-pages
                   folder: public
