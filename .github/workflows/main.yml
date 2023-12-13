@@ -30,7 +30,7 @@ jobs:
               run: sed -i 's/<base href="\/" \/>/<base href="\/qr-detector\/" \/>/g' public/index.html
 
             - name: Deploy 🚀
-              uses: JamesIves/github-pages-deploy-action@4.5.0
+              uses: JamesIves/github-pages-deploy-action@v4
               with:
                   branch: gh-pages
                   folder: public
