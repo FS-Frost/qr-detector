@@ -1,5 +1,5 @@
 {
-    "short_name": "QR Detector",
+    "short_name": "QRDetector",
     "name": "QR Detector",
     "icons": [
         {
@@ -20,14 +20,6 @@
     ],
     "start_url": ".",
     "display": "standalone",
-    "theme_color": "#337ab7",
-    "background_color": "#ffffff",
-    "id": "qr-detector",
-    "description": "App to scan QR codes.",
-    "dir": "auto",
-    "lang": "en",
-    "orientation": "portrait",
-    "categories": [
-        "utilities"
-    ]
+    "theme_color": "#000000",
+    "background_color": "#ffffff"
 }
