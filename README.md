@@ -1,8 +1,8 @@
-# qr-scanner
+# qr-detector
 
-PWA QR scanner because my phone can't read them natively and I don't want to upgrade it.
+PWA QR detector because my phone can't read them natively and I don't want to upgrade it.
 
-[https://fs-frost.github.io/qr-scanner](https://fs-frost.github.io/qr-scanner)
+[https://fs-frost.github.io/qr-detector](https://fs-frost.github.io/qr-detector)
 
 ## Built with
 

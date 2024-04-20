@@ -3,7 +3,7 @@
 </script>
 
 <main>
-    <h1 class="title"><a href="/">QR Scanner</a></h1>
+    <h1 class="title"><a href="/">QR Detector</a></h1>
 
     <Scanner />
 </main>
