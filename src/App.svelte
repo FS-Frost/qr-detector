@@ -1,13 +1,5 @@
 <script lang="ts">
-    import { onMount } from "svelte";
     import Scanner from "./Scanner.svelte";
-
-    onMount(() => {
-        // navigator.serviceWorker &&
-        //     navigator.serviceWorker.register("js/worker.js").then(function (registration) {
-        //         console.log("Service worker registered with scope: ", registration.scope);
-        //     });
-    });
 </script>
 
 <main>
