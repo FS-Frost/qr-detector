@@ -1,0 +1,31 @@
+{
+    "short_name": "QR Detector",
+    "name": "QR Detector",
+    "icons": [
+        {
+            "src": "favicon.ico",
+            "sizes": "64x64 32x32 24x24 16x16",
+            "type": "image/x-icon"
+        },
+        {
+            "src": "favicon.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "favicon.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ],
+    "start_url": ".",
+    "display": "standalone",
+    "theme_color": "#337ab7",
+    "background_color": "#ffffff",
+    "id": "qr-detector",
+    "description": "App to scan QR codes.",
+    "dir": "auto",
+    "lang": "en",
+    "orientation": "portrait",
+    "categories": []
+}
