@@ -4,7 +4,7 @@
 
     onMount(() => {
         navigator.serviceWorker &&
-            navigator.serviceWorker.register("/js/worker.js").then(function (registration) {
+            navigator.serviceWorker.register("js/worker.js").then(function (registration) {
                 console.log("Service worker registered with scope: ", registration.scope);
             });
     });
