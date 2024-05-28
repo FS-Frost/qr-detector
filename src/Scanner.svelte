@@ -3,19 +3,11 @@
     import * as qr from "html5-qrcode";
 
     let scanner: qr.Html5QrcodeScanner;
-    let result: string = "";
+    let results: string[] = [];
     let isPaused: boolean = false;
 
     function onScanSuccess(decodedText: string, decodedResult: unknown): void {
-        result = decodedText;
-        if (result.length > 0) {
-            scanner.pause();
-            isPaused = true;
-        }
-    }
-
-    function onScanFailure(error: unknown): void {
-        result = "";
+        results.push(decodedText);
     }
 
     function resume(): void {
@@ -28,14 +20,14 @@
         isPaused = true;
     }
 
-    function openAsUrl(): void {
+    function openAsUrl(result: string): void {
         const a = document.createElement("a");
         a.href = result;
         a.target = "_blank";
         a.click();
     }
 
-    async function copyToClipboard(): Promise<void> {
+    async function copyToClipboard(result: string): Promise<void> {
         try {
             await navigator.clipboard.writeText(result);
             alert("Copied to clipboard!");
@@ -66,20 +58,31 @@
             verbose
         );
 
+        const onScanFailure = () => {};
         scanner.render(onScanSuccess, onScanFailure);
+        const btnStartCamera = document.querySelector("#html5-qrcode-button-camera-permission");
+        if (btnStartCamera == null || !(btnStartCamera instanceof HTMLButtonElement)) {
+            return;
+        }
+
+        btnStartCamera.click();
     });
 </script>
 
 <div class="scanner">
-    {#if result.length > 0}
-        <div class="result">
-            <p>{result}</p>
-        </div>
+    <div class="results">
+        {#each results as result}
+            <div class="result mb-2">
+                <p>{result}</p>
 
-        <button class="button is-success is-fullwidth mb-2" on:click={() => openAsUrl()}>Open as URL</button>
+                <div class="buttons">
+                    <button class="button is-success" on:click={() => openAsUrl(result)}>Open as URL</button>
 
-        <button class="button is-success is-fullwidth mb-2" on:click={() => copyToClipboard()}>Copy to clipboard</button>
-    {/if}
+                    <button class="button is-success" on:click={() => copyToClipboard(result)}>Copy to clipboard</button>
+                </div>
+            </div>
+        {/each}
+    </div>
 
     {#if isPaused}
         <button class="button is-info is-fullwidth mb-2" on:click={() => resume()}>Resume</button>
@@ -95,9 +98,24 @@
         margin: 5%;
     }
 
+    .results {
+        height: 12rem;
+        overflow: auto;
+    }
+
+    .result {
+        display: flex;
+    }
+
     .result p {
+        width: 50%;
         font-weight: 500;
         text-align: center;
+    }
+
+    .result .buttons {
+        display: flex;
+        width: 50%;
     }
 
     button {
