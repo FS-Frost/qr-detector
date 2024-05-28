@@ -7,7 +7,7 @@
     let isPaused: boolean = false;
 
     function onScanSuccess(decodedText: string, decodedResult: unknown): void {
-        results.push(decodedText);
+        results = [decodedText, ...results];
     }
 
     function resume(): void {
