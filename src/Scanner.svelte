@@ -7,6 +7,10 @@
     let isPaused: boolean = false;
 
     function onScanSuccess(decodedText: string, decodedResult: unknown): void {
+        if (results.length > 0 && results[0] === decodedText) {
+            return;
+        }
+
         results = [decodedText, ...results];
     }
 
@@ -20,20 +24,13 @@
         isPaused = true;
     }
 
-    function openAsUrl(result: string): void {
-        const a = document.createElement("a");
-        a.href = result;
-        a.target = "_blank";
-        a.click();
-    }
-
     async function copyToClipboard(result: string): Promise<void> {
         try {
             await navigator.clipboard.writeText(result);
-            alert("Copied to clipboard!");
+            alert(`Copied to clipboard: ${result}`);
         } catch (error) {
-            console.error("ERROR: copy to clipboard", error);
-            alert("Could not copy to clipboard");
+            console.error(`ERROR: copy to clipboard: ${result}`, error);
+            alert(`Could not copy to clipboard: ${result}`);
         }
     }
 
@@ -73,11 +70,15 @@
     <div class="results">
         {#each results as result}
             <div class="result mb-2">
-                <p>{result}</p>
+                <p>
+                    {#if result.startsWith("http")}
+                        <a href={result} target="_blank">{result}</a>
+                    {:else}
+                        <span>{result}</span>
+                    {/if}
+                </p>
 
                 <div class="buttons">
-                    <button class="button is-success" on:click={() => openAsUrl(result)}>Open as URL</button>
-
                     <button class="button is-success" on:click={() => copyToClipboard(result)}>Copy to clipboard</button>
                 </div>
             </div>
@@ -107,10 +108,18 @@
         display: flex;
     }
 
-    .result p {
+    .result p,
+    .result a {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         width: 50%;
         font-weight: 500;
-        text-align: center;
+        margin-right: 0.5rem;
+    }
+
+    .result a {
+        text-decoration: underline;
     }
 
     .result .buttons {
