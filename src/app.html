@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <meta name="theme-color" content="#000000" />
+        <meta name="description" content="QR and barcode scanner that runs in your browser." />
+        <script>
+            // Before first paint: saved theme (src/lib/theme.svelte.ts) and UI language (src/lib/i18n/index.ts).
+            try {
+                var t = localStorage.getItem("qr.theme");
+                if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
+            } catch (e) {}
+            if (/^es\b/i.test(navigator.language || "")) document.documentElement.lang = "es";
+        </script>
+        <link rel="icon" type="image/png" href="%sveltekit.assets%/favicon192.png" />
+        <link rel="apple-touch-icon" href="%sveltekit.assets%/favicon192.png" />
+        <link rel="manifest" href="%sveltekit.assets%/manifest.webmanifest" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-title" content="QR Detector" />
+        <title>QR Detector</title>
+        %sveltekit.head%
+    </head>
+    <body>
+        <div style="display: contents">%sveltekit.body%</div>
+    </body>
+</html>
