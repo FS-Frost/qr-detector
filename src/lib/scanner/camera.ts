@@ -1,0 +1,113 @@
+// Camera: open/close the stream, list devices, torch and zoom (only when the track reports them).
+import { cameraUnavailable, ScanError, toScanError } from "./errors.ts";
+
+export type Zoom = { min: number; max: number; step: number; value: number };
+export type CameraInfo = { deviceId: string; label: string };
+export type Capabilities = { torch: boolean; zoom: Zoom | null };
+
+/** Non-standard (but widely shipped) image-capture constraints, missing from TS's DOM lib. */
+type ExtCapabilities = MediaTrackCapabilities & { torch?: boolean; zoom?: { min: number; max: number; step?: number } };
+type ExtSettings = MediaTrackSettings & { zoom?: number; torch?: boolean };
+
+const DEVICE_KEY = "qr.camera";
+
+function savedDevice(): string | undefined {
+    try {
+        return localStorage.getItem(DEVICE_KEY) ?? undefined;
+    } catch {
+        return undefined;
+    }
+}
+
+function saveDevice(id: string | undefined) {
+    try {
+        if (id) localStorage.setItem(DEVICE_KEY, id);
+    } catch {
+        /* storage blocked: the camera is simply not remembered */
+    }
+}
+
+function constraints(deviceId?: string): MediaStreamConstraints {
+    const video: MediaTrackConstraints = { width: { ideal: 1920 }, height: { ideal: 1080 } };
+    if (deviceId) video.deviceId = { exact: deviceId };
+    else video.facingMode = { ideal: "environment" };
+    return { video, audio: false };
+}
+
+export class Camera {
+    stream: MediaStream | null = null;
+
+    get track(): MediaStreamTrack | null {
+        return this.stream?.getVideoTracks()[0] ?? null;
+    }
+
+    get deviceId(): string | undefined {
+        return this.track?.getSettings().deviceId;
+    }
+
+    /** Opens the camera into `video`. `deviceId` undefined = the remembered one, or the rear camera. */
+    async start(video: HTMLVideoElement, deviceId = savedDevice()): Promise<Capabilities> {
+        const why = cameraUnavailable();
+        if (why) throw new ScanError(why);
+        this.stop(video);
+        try {
+            this.stream = await navigator.mediaDevices.getUserMedia(constraints(deviceId));
+        } catch (e) {
+            const err = toScanError(e);
+            // A remembered camera that no longer exists: fall back to "any rear camera".
+            if (!deviceId || err.code !== "no-camera") throw err;
+            try {
+                this.stream = await navigator.mediaDevices.getUserMedia(constraints());
+            } catch (e2) {
+                throw toScanError(e2);
+            }
+        }
+        video.srcObject = this.stream;
+        try {
+            await video.play();
+        } catch (e) {
+            // play() is interrupted if the stream is replaced meanwhile; anything else is a real failure.
+            if (!(e instanceof DOMException && e.name === "AbortError")) throw toScanError(e);
+        }
+        saveDevice(this.deviceId);
+        return this.capabilities();
+    }
+
+    stop(video?: HTMLVideoElement) {
+        this.stream?.getTracks().forEach((t) => t.stop());
+        this.stream = null;
+        if (video) video.srcObject = null;
+    }
+
+    capabilities(): Capabilities {
+        const track = this.track;
+        if (!track?.getCapabilities) return { torch: false, zoom: null };
+        const caps = track.getCapabilities() as ExtCapabilities;
+        const settings = track.getSettings() as ExtSettings;
+        const zoom =
+            caps.zoom && caps.zoom.max > caps.zoom.min
+                ? { min: caps.zoom.min, max: caps.zoom.max, step: caps.zoom.step || 0.1, value: settings.zoom ?? caps.zoom.min }
+                : null;
+        return { torch: caps.torch === true, zoom };
+    }
+
+    async setTorch(on: boolean) {
+        await this.track?.applyConstraints({ advanced: [{ torch: on } as MediaTrackConstraintSet] });
+    }
+
+    async setZoom(value: number) {
+        await this.track?.applyConstraints({ advanced: [{ zoom: value } as MediaTrackConstraintSet] });
+    }
+
+    /** Video inputs. Labels are empty until permission is granted. */
+    static async list(): Promise<CameraInfo[]> {
+        try {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            return devices
+                .filter((d) => d.kind === "videoinput" && d.deviceId)
+                .map((d, i) => ({ deviceId: d.deviceId, label: d.label || `Camera ${i + 1}` }));
+        } catch {
+            return [];
+        }
+    }
+}
