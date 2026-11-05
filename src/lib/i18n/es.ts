@@ -76,7 +76,7 @@ export const es: Record<MessageKey, string> = {
 
     "history.title": "Historial",
     "history.empty": "Los códigos que escanees aparecerán aquí.",
-    "history.count": "{n} guardados · últimos {max}",
+    "history.count": "Guardados: {n} · máx. {max}",
 
     "info.title": "Información",
     "info.description": "Escanea códigos QR y de barras. Todo ocurre en tu dispositivo: no se sube nada.",

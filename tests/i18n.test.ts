@@ -21,7 +21,7 @@ describe("i18n", () => {
         for (const k of Object.keys(en) as (keyof typeof en)[]) expect(ph(es[k])).toEqual(ph(en[k]));
     });
     test("interpolation", () => {
-        expect(translate("en", "history.count", { n: 3, max: 100 })).toBe("3 saved · last 100");
+        expect(translate("en", "history.count", { n: 3, max: 100 })).toBe("Saved: 3 · max. 100");
         expect(translate("es", "update.done", { version: "abc1234" })).toBe("Actualizada a la versión abc1234");
     });
     test("relative time", () => {

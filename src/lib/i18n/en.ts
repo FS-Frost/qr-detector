@@ -74,7 +74,7 @@ export const en = {
 
     "history.title": "History",
     "history.empty": "Codes you scan will appear here.",
-    "history.count": "{n} saved · last {max}",
+    "history.count": "Saved: {n} · max. {max}",
 
     "info.title": "About",
     "info.description": "Scan QR codes and barcodes. Everything happens on your device: nothing is uploaded.",

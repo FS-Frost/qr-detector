@@ -19,13 +19,13 @@ export function visibleRect(vw: number, vh: number, ew: number, eh: number): Rec
 type FrameVideo = HTMLVideoElement & { requestVideoFrameCallback?(cb: () => void): number };
 
 /**
- * Runs until `signal` aborts or a code is read (then `onHit` is called once and the loop stops).
+ * Runs until `signal` aborts or a code is accepted: `onHit` returning false ignores that read and keeps scanning.
  * Decoder errors on single frames are ignored (the next frame retries); `onError` gets repeated failures.
  */
 export function scanLoop(
     video: HTMLVideoElement,
     decoder: Decoder,
-    onHit: (d: Detection) => void,
+    onHit: (d: Detection) => boolean,
     signal: AbortSignal,
     onError?: (e: unknown) => void,
 ) {
@@ -54,7 +54,7 @@ export function scanLoop(
         try {
             const hit = await decoder.frame(ctx.getImageData(0, 0, canvas.width, canvas.height));
             failures = 0;
-            if (hit && !signal.aborted) return onHit(hit);
+            if (hit && !signal.aborted && onHit(hit)) return;
         } catch (e) {
             if (++failures === 10) onError?.(e);
         }
